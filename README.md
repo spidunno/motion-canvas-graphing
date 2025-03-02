@@ -1,54 +1,59 @@
-# My First Motion Canvas Component Library
+# Motion Canvas Graphing
+Render expressions onto a graph (along with various other math utilities). Graphing powered by Desmos.
+## Installation
+`npm install @spidunno/motion-canvas-graphing`
+## Usage
+All math components must be descendants of a `MathSpace` component. The `MathSpace` provides coordinate transformations from "math space" to pixel space.
 
-## Using this library
-
-### From git
-
-1. Clone this repo.
-1. Run `npm install <path to this repo>` in your motion canvas project
-
-### From npm
-
-1. Run `npm install <library name here>`
-
-## Why use this repo?
-
-This repo gives you a couple benefits over starting from scratch:
-
-- The same linting options as main motion-canvas code, which helps to keep the
-  community on the same page.
-- A build pipeline in place with:
-  - automatic watch support, allowing you to develop quickly
-  - automatic compilation and splitting for your TypeScript, allowing it to be
-    used in a variety of environments.
-
-## Getting Started
-
-1. Clone this repo.
-1. Run
-   `git remote add upstream https://github.com/hhenrichsen/motion-canvas-component-library-template`
-   to gain the ability to update when this repo gets enhancements (via
-   `git pull upstream main`)
-1. Update the package name in `package.json` and run `npm install`. I recommend
-   something like `@username/library-name`.
-1. Update the UMD name of this package in `rollup.config.mjs`
-1. Update the title of this README.
-1. Run `npm run watch` -- this will create some files in the `lib` folder for
-   you, and rebuild them here when you make changes.
-1. Start developing a component in the `src` folder, and make sure that it's
-   exported from the `index.ts` file.
-1. Run `npm install <path to this repo>` in a motion canvas project -- this will
-   add a link to this repo in your project.
-1. Import components from this library and verify that they work:
-
+All `MathExpression` components must be descendants of a `MathGraphingCalculator`.
+ 
+Here's a full example that creates a grid and adds a sine wave to it:
 ```tsx
-import {SwitchComponent} from '@username/library-name';
+import { makeScene2D } from "@motion-canvas/2d";
+import { MathSpace } from "../components/MathSpace";
+import { MathGrid } from "../components/MathGrid";
+import { createRef, createSignal } from "@motion-canvas/core";
+import { MathGraphingCalculator } from "../components/MathGraphingCalculator";
+import { MathExpression } from "../components/MathExpression";
+
+export default makeScene2D(function* (view) {
+   // MathGraphingCalculator is asynchronous, so it must be yielded to ensure it's loaded before rendering.
+	yield view.add(
+		<MathSpace
+			ref={ms}
+			width={() => view.width()}
+			height={() => view.height()}
+
+         /* `min` and `max` specify the domain that the `MathSpace` should span across */
+			min={new Vector2(-8, 8)}
+			max={new Vector2(-4.5, 4.5)}
+		>
+         { /* Minor subdivisions */ }
+         <MathGrid lineWidth={1} spacing={[1 / 2, 1 / 2]} stroke="#4e5485" />
+         
+         { /* Major subdivisions */ }
+		   <MathGrid
+			   lineWidth={2}
+			   spacing={[1, 1]}
+			   stroke="#919cff"
+			   xAxisStroke={"#f27949"}
+			   yAxisStroke={"#71e377"}
+		   />
+
+         <MathGraphingCalculator>
+            <MathExpression
+               /* equations are passed in as LaTeX, an easy way to write these is to write it in Desmos and then copy/paste it here. */
+				   equation={String.raw`y = \sin(x)`}
+               stroke="rgb(241, 249, 12)"
+				   />
+         </MathGraphingCalculator>
+      </MathSpace>
+	);
+});
+
 ```
 
-## Publishing to NPM
-
-1. Run `npm run build` one last time.
-1. Verify that the package works when installed with
-   `npm install <path to this repo>`.
-1. Run `npm publish --access public`. You may have to authenticate if this is
-   your first time publishing a package.
+## Credits
+spidunno - main developer
+protowalker - helped with improving the codebase
+desmos - made the tool that powers this one

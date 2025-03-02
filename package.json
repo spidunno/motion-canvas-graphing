@@ -1,5 +1,5 @@
 {
-  "name": "motion-canvas-component-library",
+  "name": "@spidunno/motion-canvas-graphing",
   "version": "0.0.0",
   "description": "",
   "scripts": {
@@ -21,9 +21,12 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "keywords": [
-    "motion-canvas"
+    "motion-canvas",
+    "graphing",
+    "desmos",
+    "plotting"
   ],
-  "author": "",
+  "author": "spidunno",
   "homepage": "",
   "peerDependencies": {
     "@motion-canvas/2d": "^3.14.2",
@@ -53,5 +56,8 @@
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix",
     "*.{js,jsx,ts,tsx,md,scss,json,mjs}": "prettier --write"
+  },
+  "dependencies": {
+    "@types/desmos": "^1.11.0"
   }
 }
