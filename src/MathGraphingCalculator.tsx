@@ -238,7 +238,7 @@ export class MathGraphingCalculator extends Layout {
 				}
 
 		});
-		
+
       for (const branch of pSorted) {
         context.save();
         context.globalAlpha = child.opacity();
@@ -256,7 +256,7 @@ export class MathGraphingCalculator extends Layout {
             context,
             child,
           );
-
+					context.lineCap = "round";
           context.fill(fillPath);
           context.stroke(strokePath);
         }
