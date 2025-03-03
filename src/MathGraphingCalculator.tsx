@@ -12,6 +12,7 @@ import {
   createComputedAsync,
   createEffect,
   createSignal,
+  DependencyContext,
   PossibleVector2,
   SignalValue,
   SimpleSignal,
@@ -87,18 +88,18 @@ export class MathGraphingCalculator extends Layout {
         }),
       );
     });
-    createEffect(() => {
-      const mathSpace = this.mathSpace();
-      if (!mathSpace) return;
-      const min = mathSpace.min();
-      const max = mathSpace.max();
-      this.calculator.setMathBounds({
-        left: min.x - 1,
-        right: max.x + 1,
-        bottom: min.y - 1,
-        top: max.y + 1,
-      });
-    });
+    // createEffect(() => {
+    //   const mathSpace = this.mathSpace();
+    //   if (!mathSpace) return;
+    //   const min = mathSpace.min();
+    //   const max = mathSpace.max();
+    //   this.calculator.setMathBounds({
+    //     left: min.x,
+    //     right: max.x,
+    //     bottom: min.y,
+    //     top: max.y,
+    //   });
+    // });
 
     // @ts-expect-error type defs don't have this
     const orig = this.calculator.controller.evaluator.onEvaluatorResults;
@@ -107,11 +108,27 @@ export class MathGraphingCalculator extends Layout {
       const children = this.childrenAs<MathExpression>();
       const p: Record<string, Branches> = {};
 
-      return new Promise(resolve => {
+      await new Promise(resolve => {
+        const neededChanges = new Set(
+          children
+            .filter(v => v instanceof MathExpression)
+            .map(v => v.expressionId),
+        );
         // @ts-expect-error type defs don't have this
         this.calculator.controller.evaluator.onEvaluatorResults = (u: any) => {
+          for (const [key, value] of Object.entries(u.evaluationStates)) {
+            // @ts-expect-error type defs don't have this
+            if (!value.is_graphable) neededChanges.delete(key);
+          }
           for (const [key, value] of Object.entries(u.graphData.addedGraphs)) {
+            let resolved = true;
+
+            // @ts-expect-error type defs again
+            for (const graph of value) {
+              if (!graph.resolved) resolved = false;
+            }
             p[key] = value;
+            if (resolved && neededChanges.has(key)) neededChanges.delete(key);
             // @ts-expect-error
             if (value.compiled?.fn) {
               for (const child of children) {
@@ -123,10 +140,32 @@ export class MathGraphingCalculator extends Layout {
             }
           }
 
-          resolve(p);
+          if (neededChanges.size <= 1) resolve(p);
 
           return orig(u);
         };
+
+        const mathSpace = this.mathSpace();
+        // if (!mathSpace) return;
+        const min = mathSpace.min();
+        const max = mathSpace.max();
+
+        const mathCoordinates =
+          // @ts-expect-error type defs
+          this.calculator._calc.graphpaperBounds.mathCoordinates;
+        if (
+          mathCoordinates.left !== min.x ||
+          mathCoordinates.right !== max.x ||
+          mathCoordinates.top !== max.x ||
+          mathCoordinates.bottom !== min.y
+        ) {
+          this.calculator.setMathBounds({
+            left: min.x,
+            right: max.x,
+            bottom: min.y,
+            top: max.y,
+          });
+        }
 
         for (const child of children) {
           this.calculator.setExpression({
@@ -147,6 +186,8 @@ export class MathGraphingCalculator extends Layout {
           });
         }
       });
+
+      return p;
     });
   }
 
