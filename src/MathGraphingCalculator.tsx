@@ -108,7 +108,7 @@ export class MathGraphingCalculator extends Layout {
       const children = this.childrenAs<MathExpression>();
       const p: Record<string, Branches> = {};
 
-      await new Promise(resolve => {
+      return await new Promise(resolve => {
         const neededChanges = new Set(
           children
             .filter(v => v instanceof MathExpression)
@@ -118,14 +118,13 @@ export class MathGraphingCalculator extends Layout {
         this.calculator.controller.evaluator.onEvaluatorResults = (u: any) => {
           for (const [key, value] of Object.entries(u.evaluationStates)) {
             // @ts-expect-error type defs don't have this
-            if (!value.is_graphable) neededChanges.delete(key);
+            if (value.is_graphable === false) neededChanges.delete(key);
           }
           for (const [key, value] of Object.entries(u.graphData.addedGraphs)) {
             let resolved = true;
-
             // @ts-expect-error type defs again
             for (const graph of value) {
-              if (!graph.resolved) resolved = false;
+              	if (graph.resolved === false) resolved = false;
             }
             p[key] = value;
             if (resolved && neededChanges.has(key)) neededChanges.delete(key);
@@ -140,7 +139,7 @@ export class MathGraphingCalculator extends Layout {
             }
           }
 
-          if (neededChanges.size <= 1) resolve(p);
+          if (neededChanges.size === 0) resolve(p);
 
           return orig(u);
         };
@@ -186,8 +185,6 @@ export class MathGraphingCalculator extends Layout {
           });
         }
       });
-
-      return p;
     });
   }
 
