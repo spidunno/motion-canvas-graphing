@@ -87,10 +87,10 @@ export class MathGraphingCalculator extends Layout {
 			const min = mathSpace.min();
 			const max = mathSpace.max();
 			this.calculator.setMathBounds({
-				left: min.x - 0.25,
-				right: max.x + 0.25,
-				bottom: min.y - 0.25,
-				top: max.y + 0.25,
+				left: min.x - 1,
+				right: max.x + 1,
+				bottom: min.y - 1,
+				top: max.y + 1,
 			});
 		});
 
