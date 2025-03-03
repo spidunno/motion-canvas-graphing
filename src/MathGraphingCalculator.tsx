@@ -128,12 +128,12 @@ export class MathGraphingCalculator extends Layout {
             }
             p[key] = value;
             if (resolved && neededChanges.has(key)) neededChanges.delete(key);
-            // @ts-expect-error
-            if (value.compiled?.fn) {
+						// @ts-expect-error
+            if (value?.[0].compiled?.fn) {
               for (const child of children) {
                 if (child.expressionId === key) {
                   // @ts-expect-error
-                  child.fn(value.compiled?.fn);
+                  child.fn(() => value?.[0].compiled?.fn);
                 }
               }
             }
