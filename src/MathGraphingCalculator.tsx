@@ -228,19 +228,17 @@ export class MathGraphingCalculator extends Layout {
       if (!plot) continue;
 
 			// Sort the order of the branches so that the stroke of an implicit is always drawn above the fill
-			const pSorted = [];
-			for (let i = 0; i < plot.length - 1; i ++) {
-				const a = plot[i];
-				const b = plot[i + 1];
+			const pSorted = plot.toSorted((a: any, b: any) => {
 				if (a.graphMode === GraphModes.ImplicitStroke && b.graphMode === GraphModes.ImplicitFill) {
-					pSorted.push(b);
-					pSorted.push(a);
-					i++;
+					return 1;
+				} else if (b.graphMode === GraphModes.ImplicitStroke && a.graphMode === GraphModes.ImplicitFill) {
+					return -1
 				} else {
-					pSorted.push(a);
+					return 0;
 				}
-			}
 
+		});
+		
       for (const branch of pSorted) {
         context.save();
         context.globalAlpha = child.opacity();
@@ -283,6 +281,7 @@ export class MathGraphingCalculator extends Layout {
 
     switch (branch.graphMode) {
       case GraphModes.ImplicitStroke: {
+				console.log(branch);
         for (const s of segments) {
           if (branch.operator === '>' || branch.operator === '<') {
             // const size = new Vector2(0.5)
