@@ -230,7 +230,21 @@ export class MathGraphingCalculator extends Layout {
       const plot = plots[child.expressionId];
       if (!plot) continue;
 
-      for (const branch of plot) {
+			// Sort the order of the branches so that the stroke of an implicit is always drawn above the fill
+			const pSorted = [];
+			for (let i = 0; i < plot.length - 1; i ++) {
+				const a = plot[i];
+				const b = plot[i + 1];
+				if (a.graphMode === GraphModes.ImplicitStroke && b.graphMode === GraphModes.ImplicitFill) {
+					pSorted.push(b);
+					pSorted.push(a);
+					i++;
+				} else {
+					pSorted.push(a);
+				}
+			}
+
+      for (const branch of pSorted) {
         context.save();
         context.globalAlpha = child.opacity();
         if ((branch?.segments?.length || 0) > 0) {
@@ -249,9 +263,10 @@ export class MathGraphingCalculator extends Layout {
           );
 
           context.fill(fillPath);
+          context.stroke(strokePath);
+
           // context.setLineDash([4, 16]);
           // console.log(context.getLineDash());
-          context.stroke(strokePath);
         }
         context.restore();
       }
