@@ -264,9 +264,6 @@ export class MathGraphingCalculator extends Layout {
 
           context.fill(fillPath);
           context.stroke(strokePath);
-
-          // context.setLineDash([4, 16]);
-          // console.log(context.getLineDash());
         }
         context.restore();
       }
@@ -291,14 +288,14 @@ export class MathGraphingCalculator extends Layout {
       case GraphModes.ImplicitStroke: {
         for (const s of segments) {
           if (branch.operator === '>' || branch.operator === '<') {
-            const size = new Vector2(0.5)
-              .div(mathSpace.max().sub(mathSpace.min()))
-              .mul(mathSpace.cs()).x;
-            const gap = new Vector2(0.1)
-              .div(mathSpace.max().sub(mathSpace.min()))
-              .mul(mathSpace.cs()).x;
+            // const size = new Vector2(0.5)
+            //   .div(mathSpace.max().sub(mathSpace.min()))
+            //   .mul(mathSpace.cs()).x;
+            // const gap = new Vector2(0.1)
+            //   .div(mathSpace.max().sub(mathSpace.min()))
+            //   .mul(mathSpace.cs()).x;
 
-            context.setLineDash([size, gap]);
+            context.setLineDash(child.lineDash());
           }
           const segment = pairs<number>(s).map(p =>
             mathSpace.getPointFromPlotSpace(p),
@@ -372,14 +369,14 @@ export class MathGraphingCalculator extends Layout {
             drawLineFromPoints(fillPath, segment);
           }
           if (branch.operator === '>' || branch.operator === '<') {
-            const size = new Vector2(0.5)
-              .div(mathSpace.max().sub(mathSpace.min()))
-              .mul(mathSpace.cs()).x;
-            const gap = new Vector2(0.1)
-              .div(mathSpace.max().sub(mathSpace.min()))
-              .mul(mathSpace.cs()).x;
+            // const size = new Vector2(0.5)
+            //   .div(mathSpace.max().sub(mathSpace.min()))
+            //   .mul(mathSpace.cs()).x;
+            // const gap = new Vector2(0.1)
+            //   .div(mathSpace.max().sub(mathSpace.min()))
+            //   .mul(mathSpace.cs()).x;
 
-            context.setLineDash([size, gap]);
+            context.setLineDash(child.lineDash());
           }
           const segment = rawSegment
             .map(v => {
@@ -449,14 +446,14 @@ export class MathGraphingCalculator extends Layout {
             drawLineFromPoints(fillPath, segment);
           }
           if (branch.operator === '>' || branch.operator === '<') {
-            const size = new Vector2(0.5)
-              .div(mathSpace.max().sub(mathSpace.min()))
-              .mul(mathSpace.cs()).x;
-            const gap = new Vector2(0.1)
-              .div(mathSpace.max().sub(mathSpace.min()))
-              .mul(mathSpace.cs()).x;
+            // const size = new Vector2(0.5)
+            //   .div(mathSpace.max().sub(mathSpace.min()))
+            //   .mul(mathSpace.cs()).x;
+            // const gap = new Vector2(0.1)
+            //   .div(mathSpace.max().sub(mathSpace.min()))
+            //   .mul(mathSpace.cs()).x;
 
-            context.setLineDash([size, gap]);
+            context.setLineDash(child.lineDash());
           }
 
           const segment = rawSegment

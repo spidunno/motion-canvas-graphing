@@ -22,6 +22,8 @@ export interface MathExpressionProps extends NodeProps {
 	domain?: SignalValue<[number, number]>;
 
 	fillParametric?: SignalValue<boolean>;
+
+	lineDash?: SignalValue<number[]>;
 }
 
 /**
@@ -36,6 +38,10 @@ export class MathExpression extends Node {
 	@initial(false)
 	@signal()
 	public declare readonly fillParametric: SimpleSignal<boolean, this>;
+
+	@initial([48, 12])
+	@signal()
+	public declare readonly lineDash: SimpleSignal<number[], this>;
 
 	@initial(() => () => 0)
 	@signal()
