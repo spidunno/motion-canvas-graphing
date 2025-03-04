@@ -2,7 +2,7 @@
 Render expressions onto a graph (along with various other math utilities). Graphing powered by Desmos.
 ## Installation
 `npm install @spidunno/motion-canvas-graphing`
-## Usage
+## Example
 All math components must be descendants of a `MathSpace` component. The `MathSpace` provides coordinate transformations from "math space" to pixel space.
 
 All `MathExpression` components must be descendants of a `MathGraphingCalculator`.
@@ -50,6 +50,66 @@ export default makeScene2D(function* (view) {
 		</MathSpace>
 	);
 }); 
+```
+
+## Usage
+
+### `MathSpace`
+The main component of this library is `MathSpace`. It provides all descendant components with transformations from math coordinates to pixel coordinates (for people familiar with React, think of `MathSpace` like a context provider.)
+
+Specify the domain in math coordinates with the `min` and `max` props, and it'll map that to the size of the `MathSpace` element.
+
+Example:
+```tsx
+view.add(<MathSpace
+	min={[
+	// x,  y
+		-10, 10
+	]}
+	max={[
+	// x,  y
+		-10, 10
+	]}
+	width={800}
+	height={800}
+	>
+{ /* ... */ }
+</MathSpace>);
+```
+
+### `MathGrid`
+The `MathGrid` component renders grid lines to a `MathSpace`.
+
+API:
+```tsx
+export interface MathGridProps extends ShapeProps {
+	/** The color of the grid lines */
+	stroke?: SignalValue<PossibleCanvasStyle>;
+
+	/** The color to use for the x axis (the line where y=0) */
+	xAxisStroke?: SignalValue<PossibleCanvasStyle>;
+
+	/** The color to use for the y axis (the line where x=0) */
+	yAxisStroke?: SignalValue<PossibleCanvasStyle>;
+
+	/** Grid lines line width */
+	lineWidth?: SignalValue<number>;
+
+	/** Line width of the x and y axis lines */
+	axesLineWidth?: SignalValue<number>;
+
+	/** Spacing between grid lines */
+	spacing?: SignalValue<PossibleVector2>;
+
+	/** Start of the grid lines as percentage */
+	start?: SignalValue<number>;
+
+	/** End of the grid lines as percentage, animate this going from 0 to 1 for a nice animation */
+	end?: SignalValue<number>;
+
+	/** Opacity of the grid, use this instead of `opacity` because of weird behavior with `opacity` */
+	alpha?: SignalValue<number>;
+}
 ```
 
 ## Credits

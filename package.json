@@ -1,6 +1,6 @@
 {
   "name": "@spidunno/motion-canvas-graphing",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "",
   "scripts": {
     "prepare": "husky install",
