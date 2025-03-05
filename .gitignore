@@ -2,3 +2,4 @@ node_modules/
 lib/
 dist/
 testing/node_modules/
+testing/output/

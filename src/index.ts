@@ -6,3 +6,5 @@ export { MathGrid } from './MathGrid';
 export type { MathGridProps } from './MathGrid';
 export { MathSpace } from './MathSpace';
 export type { MathSpaceProps } from './MathSpace';
+export { MathAxis } from './MathAxis';
+export type { MathAxisProps } from './MathAxis';
