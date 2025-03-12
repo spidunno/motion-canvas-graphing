@@ -13,9 +13,11 @@ import {
   createEffect,
   createSignal,
   DependencyContext,
+  errorToLog,
   PossibleVector2,
   SignalValue,
   SimpleSignal,
+  useLogger,
   Vector2,
 } from '@motion-canvas/core';
 import {MathExpression} from './MathExpression';
@@ -108,7 +110,8 @@ export class MathGraphingCalculator extends Layout {
       const children = this.childrenAs<MathExpression>();
       const p: Record<string, Branches> = {};
 
-      return await new Promise(resolve => {
+      return await new Promise((resolve, reject) => {
+        const errors: string[] = [];
         const neededChanges = new Set(
           children
             .filter(v => v instanceof MathExpression)
@@ -117,6 +120,14 @@ export class MathGraphingCalculator extends Layout {
         // @ts-expect-error type defs don't have this
         this.calculator.controller.evaluator.onEvaluatorResults = (u: any) => {
           for (const [key, value] of Object.entries(u.evaluationStates)) {
+            // console.log(key, value);
+            // @ts-expect-error type defs don't have this
+            if (value.error) {
+              // @ts-expect-error type defs don't have this
+              errors.push(`Desmos Error: ${this.calculator.controller.s(value.error.key, value.error.vars)}`);
+
+              neededChanges.delete(key);
+            }
             // @ts-expect-error type defs don't have this
             if (value.is_graphable === false) neededChanges.delete(key);
           }
@@ -138,8 +149,7 @@ export class MathGraphingCalculator extends Layout {
               }
             }
           }
-
-          if (neededChanges.size === 0) resolve(p);
+          if (neededChanges.size === 0) resolve({plots: p, errors});
 
           return orig(u);
         };
@@ -195,8 +205,10 @@ export class MathGraphingCalculator extends Layout {
     const children = this.childrenAs<MathExpression>().filter(
       v => v instanceof MathExpression,
     );
-    const plots = this.plots();
-    if (!plots) return;
+    const obj = this.plots();
+    if (!obj) return;
+    const { plots, errors } = obj;
+    if (errors.length > 0) useLogger().error(errors.join("\n"))
 
     const min = mathSpace.min();
     const max = mathSpace.max();
@@ -281,7 +293,7 @@ export class MathGraphingCalculator extends Layout {
 
     switch (branch.graphMode) {
       case GraphModes.ImplicitStroke: {
-				console.log(branch);
+				// console.log(branch);
         for (const s of segments) {
           if (branch.operator === '>' || branch.operator === '<') {
             // const size = new Vector2(0.5)
